@@ -1,0 +1,11 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg width="50%" height="50%" version="1.1"
+xmlns="http://www.w3.org/2000/svg">
+
+	<text x="200" y="150" dx="-5" dy="5" rotate="360" textLength="90" >
+		I Love <tspan fill="red">D3</tspan>
+	</text>
+</svg>
