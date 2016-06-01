@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<p>Cat</p>
+	<P>Dog</P>
+
+	<script type="text/javascript" src="../d3/d3.min.js">
+		<!-- 
+		var g = document.getElementsByTagName("p");
+		for (var i=0; i<g.length; i++){
+			var gg = g.item(i);
+			gg.innerHTML = "Hello, World";
+		}
+		-->
+	</script>
+	<script type="text/javascript">		
+		var p = d3.select("body").selectAll("p").text("HelloWorld");
+		p.style("color", "red");
+		p.style("font-size","72px");
+	</script>
+</body>
+</html>
