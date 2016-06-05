@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>量子和分位比例尺</title>
+</head>
+<body>
+	<script src = "../d3/d3.min.js"></script>
+
+	<script>
+		
+		var quantize = d3.scale.quantize()
+						 .domain([50, 0])
+						 .range(["#888", "#777", "#369", "#555", "#444"]);
+
+		var r = [45, 41, 25, 15, 5];
+
+		var svg = d3.select("body").append("svg")
+								   .attr("width", 400)
+								   .attr("height", 400);
+
+		svg.selectAll("circle")
+		   .data(r)
+		   .enter()
+		   .append("circle")
+		   .attr("cx", function(d, i) {
+		   		return 50 + i * 30;
+		   })
+		   .attr("cy", 50)
+		   .attr("r", function(d) {
+		   		return d;
+		   })
+		   .attr("fill", function(d) {
+		   		return quantize(d);
+		   });
+
+	</script>
+</body>
+</html>
