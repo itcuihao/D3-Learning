@@ -1,0 +1,154 @@
+<html>  
+<head>  
+	<meta charset="utf-8">  
+	<title>10.11.2 面积堆栈图</title>  
+<style>
+
+.axis path,
+.axis line{
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+ 
+.axis text {
+	font-family: sans-serif;
+	font-size: 11px;
+}
+
+</style>
+</head> 
+<body>  
+	<script src="../d3/d3.min.js" charset="utf-8"></script>  
+	<script>
+	
+	var width  = 700;	//SVG绘制区域的宽度
+	var height = 500;	//SVG绘制区域的高度
+			
+	var svg = d3.select("body")			//选择<body>
+				.append("svg")			//在<body>中添加<svg>
+				.attr("width", width)	//设定<svg>的宽度属性
+				.attr("height", height);//设定<svg>的高度属性
+	
+	//1. 确定初始数据
+	var dataset = [
+		{ name: "松山校区" , 
+		  sales: [	{ year:2011, profit: 681 },
+					{ year:2012, profit: 604 },
+					{ year:2013, profit: 125 },
+					{ year:2014, profit: 0 },
+					{ year:2015, profit: 0 }] },
+        
+		{ name: "金家岭校区" , 
+		  sales: [	{ year:2011, profit: 0 },
+					{ year:2012, profit: 1033 },
+					{ year:2013, profit: 1192 },
+					{ year:2014, profit: 2854 },
+					{ year:2015, profit: 6242 }] },
+		{ name: "浮山校区" , 
+		  sales: [	{ year:2011, profit: 13 },
+					{ year:2012, profit: 6789 },
+					{ year:2013, profit: 7471 },
+					{ year:2014, profit: 5784 },
+					{ year:2015, profit: 2081 }] },
+    ];
+	
+	
+	//2. 转换数据
+	var stack = d3.layout.stack()
+					.values(function(d){ return d.sales; })
+					.x(function(d){ return d.year; })
+					.y(function(d){ return d.profit; });
+
+	var data = stack(dataset);
+
+	console.log(data);
+		
+		
+	//3. 绘制
+
+	//外边框
+	var padding = { left:50, right:100, top:30, bottom:30 };
+	
+	//创建x轴比例尺
+	var xRangeWidth = width - padding.left - padding.right;
+		
+	var xScale = d3.scale.ordinal()
+					.domain(data[0].sales.map(function(d){ return d.year; }))
+					.rangeBands([0, xRangeWidth],0.3);
+
+	//创建y轴比例尺
+	
+	//最大利润（定义域的最大值）
+	var maxProfit = d3.max(data[data.length-1].sales, function(d){ 
+							return d.y0 + d.y; 
+					});
+	
+	//最大高度（值域的最大值）
+	var yRangeWidth = height - padding.top - padding.bottom;
+	
+	var yScale = d3.scale.linear()
+					.domain([0, maxProfit])		//定义域
+					.range([0, yRangeWidth]);	//值域
+	
+	var area = d3.svg.area()
+					.x(function(d){ return xScale(d.year) + xScale.rangeBand()/2; })
+					.y0(function(d){ return yRangeWidth - yScale(d.y0); })
+					.y1(function(d){ return yRangeWidth - yScale(d.y0+d.y); })
+					.interpolate("basis");
+	
+	//颜色比例尺
+	var color = d3.scale.category20();
+	
+	//添加分组元素
+	var groups = svg.selectAll("g")
+					.data(data)
+					.enter()
+					.append("g")
+					.style("fill",function(d,i){ return color(i); });
+		
+	//添加区域
+	var areas = groups.append("path")
+					.attr("d", function(d){ console.log(d.sales); return area(d.sales); })
+					.attr("transform","translate(" + padding.left + "," + padding.top + ")");
+	
+	//添加坐标轴
+	var xAxis = d3.svg.axis()
+				.scale(xScale)
+				.orient("bottom");
+		
+	yScale.range([yRangeWidth, 0]);
+	
+	var yAxis = d3.svg.axis()
+					.scale(yScale)
+					.orient("left");
+					
+	svg.append("g")
+			.attr("class","axis")
+			.attr("transform","translate(" + padding.left + "," + (height - padding.bottom) +  ")")
+			.call(xAxis);
+				
+	svg.append("g")
+			.attr("class","axis")
+			.attr("transform","translate(" + padding.left + "," + (height - padding.bottom - yRangeWidth) +  ")")
+			.call(yAxis); 
+			
+	//添加分组标签
+	var labHeight = 50;
+	var labRadius = 10;
+	
+	var labelCircle = groups.append("circle")
+						.attr("cx",function(d){ return width - padding.right*0.98; })
+						.attr("cy",function(d,i){ return padding.top * 2 + labHeight * i; })
+						.attr("r",labRadius);
+					
+	var labelText = groups.append("text")
+						.attr("x",function(d){ return width - padding.right*0.8; })
+						.attr("y",function(d,i){ return padding.top * 2 + labHeight * i; })
+						.attr("dy",labRadius/2)
+						.text(function(d){ return d.name; });
+			
+</script>	
+		
+</body>  
+</html>  
